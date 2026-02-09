@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+  <!-- Background -->
+  <rect width="720" height="400" fill="#1e1e1e" rx="8"/>
+
+  <!-- Tab bar -->
+  <rect x="0" y="0" width="720" height="36" fill="#2d2d2d" rx="8"/>
+  <rect x="0" y="8" width="720" height="28" fill="#2d2d2d"/>
+  <text x="16" y="23" fill="#888" font-size="12">Elements</text>
+  <text x="80" y="23" fill="#888" font-size="12">Console</text>
+  <text x="140" y="23" fill="#888" font-size="12">Sources</text>
+  <rect x="198" y="4" width="68" height="28" fill="#1e1e1e" rx="4"/>
+  <text x="212" y="23" fill="#fff" font-size="12" font-weight="bold">Network</text>
+  <text x="280" y="23" fill="#888" font-size="12">Performance</text>
+
+  <!-- Filter bar -->
+  <rect x="0" y="36" width="720" height="32" fill="#252525"/>
+  <rect x="10" y="42" width="200" height="20" fill="#3c3c3c" rx="3"/>
+  <text x="18" y="56" fill="#ccc" font-size="11">🔍 api.plaud</text>
+
+  <!-- Column headers -->
+  <rect x="0" y="68" width="720" height="24" fill="#2a2a2a"/>
+  <text x="16" y="84" fill="#999" font-size="11">Name</text>
+  <text x="280" y="84" fill="#999" font-size="11">Status</text>
+  <text x="340" y="84" fill="#999" font-size="11">Type</text>
+  <text x="420" y="84" fill="#999" font-size="11">Size</text>
+
+  <!-- Request rows -->
+  <rect x="0" y="92" width="720" height="24" fill="#264f78" opacity="0.6"/>
+  <text x="16" y="108" fill="#4fc1ff" font-size="11">simple/web?r=0.482</text>
+  <text x="280" y="108" fill="#4ec9b0" font-size="11">200</text>
+  <text x="340" y="108" fill="#ccc" font-size="11">xhr</text>
+  <text x="420" y="108" fill="#ccc" font-size="11">12.4 kB</text>
+
+  <rect x="0" y="116" width="720" height="24" fill="#1e1e1e"/>
+  <text x="16" y="132" fill="#4fc1ff" font-size="11">filetag/?r=0.917</text>
+  <text x="280" y="132" fill="#4ec9b0" font-size="11">200</text>
+  <text x="340" y="132" fill="#ccc" font-size="11">xhr</text>
+  <text x="420" y="132" fill="#ccc" font-size="11">1.2 kB</text>
+
+  <rect x="0" y="140" width="720" height="24" fill="#1e1e1e"/>
+  <text x="16" y="156" fill="#4fc1ff" font-size="11">speaker/list?r=0.331</text>
+  <text x="280" y="156" fill="#4ec9b0" font-size="11">200</text>
+  <text x="340" y="156" fill="#ccc" font-size="11">xhr</text>
+  <text x="420" y="156" fill="#ccc" font-size="11">856 B</text>
+
+  <!-- Right panel - Headers -->
+  <line x1="480" y1="68" x2="480" y2="400" stroke="#3c3c3c" stroke-width="1"/>
+  <rect x="480" y="68" width="240" height="24" fill="#2a2a2a"/>
+  <rect x="480" y="68" width="70" height="24" fill="#1e1e1e"/>
+  <text x="492" y="84" fill="#fff" font-size="11" font-weight="bold">Headers</text>
+  <text x="560" y="84" fill="#888" font-size="11">Preview</text>
+  <text x="618" y="84" fill="#888" font-size="11">Response</text>
+
+  <!-- Headers content -->
+  <text x="492" y="112" fill="#999" font-size="10" font-weight="bold">Request Headers</text>
+
+  <text x="492" y="132" fill="#9cdcfe" font-size="10">Authorization:</text>
+  <rect x="488" y="136" width="224" height="32" fill="#264f78" opacity="0.4" rx="3"/>
+  <text x="492" y="152" fill="#ce9178" font-size="10">bearer eyJhbGciOiJI</text>
+  <text x="492" y="164" fill="#ce9178" font-size="10">UzI1NiIsInR5cCI6...</text>
+
+  <!-- Arrow pointing to Authorization -->
+  <g>
+    <rect x="488" y="180" width="224" height="36" fill="#0e639c" rx="6"/>
+    <text x="508" y="202" fill="#fff" font-size="11" font-weight="bold">☝ Copy this value</text>
+  </g>
+
+  <text x="492" y="236" fill="#9cdcfe" font-size="10">Content-Type:</text>
+  <text x="492" y="250" fill="#ce9178" font-size="10">application/json</text>
+
+  <text x="492" y="272" fill="#9cdcfe" font-size="10">Origin:</text>
+  <text x="492" y="286" fill="#ce9178" font-size="10">https://web.plaud.ai</text>
+</svg>

@@ -1,0 +1,57 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "plaud-api"
+version = "0.1.0"
+description = "Unofficial Python client for Plaud AI meeting transcription device"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "arbuzmell", email = "arbuzmell@gmail.com"}]
+keywords = ["plaud", "api", "transcription", "meetings", "speech-to-text"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
+dependencies = [
+    "requests>=2.28.0",
+    "pydantic>=2.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "pytest-cov", "ruff", "mypy", "types-requests"]
+
+[project.scripts]
+plaud = "plaud.cli.main:main"
+
+[project.urls]
+Homepage = "https://github.com/arbuzmell/plaud-api"
+Repository = "https://github.com/arbuzmell/plaud-api"
+Issues = "https://github.com/arbuzmell/plaud-api/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/plaud"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
