@@ -20,6 +20,8 @@ class PlaudClient:
         client = PlaudClient()  # auto-detect token from env / config file
         # or
         client = PlaudClient(token="eyJ...")
+        # Regional endpoint (e.g. Southeast Asia):
+        client = PlaudClient(base_url="https://api-apse1.plaud.ai")
 
         recordings = client.recordings.list()
         transcript = client.transcriptions.get("file_id")
@@ -27,13 +29,20 @@ class PlaudClient:
         tags = client.tags.list()
     """
 
-    def __init__(self, token: str | None = None) -> None:
+    def __init__(self, token: str | None = None, *, base_url: str | None = None) -> None:
         """Initialize the client.
 
         Args:
             token: Plaud JWT token. If not provided, resolves from
                    ``PLAUD_TOKEN`` env var or ``~/.config/plaud/token``.
+            base_url: Override the API base URL for regional endpoints,
+                e.g. ``"https://api-apse1.plaud.ai"`` for Southeast Asia.
+                If not provided, defaults to ``https://api.plaud.ai``.
         """
+        if base_url is not None:
+            from plaud._endpoints import set_base_url
+            set_base_url(base_url)
+
         self._token = resolve_token(token)
         self._session = PlaudSession(self._token)
 
