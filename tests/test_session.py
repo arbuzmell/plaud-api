@@ -37,3 +37,23 @@ class TestPlaudSessionBaseUrl:
         session = PlaudSession("tok", base_url="https://api-apse1.plaud.ai/")
 
         assert session.base_url == "https://api-apse1.plaud.ai"
+
+
+class TestPlaudSessionPutRaw:
+    def test_put_raw_does_not_send_bearer_authorization_to_s3(self):
+        session = PlaudSession("secret-token")
+        response = MagicMock()
+
+        with patch("plaud.session.requests.put", return_value=response) as mock_put:
+            result = session.put_raw(
+                "https://s3.example.com/presigned",
+                data=b"abc",
+                headers={"Content-Type": "application/octet-stream"},
+            )
+
+        assert result is response
+        assert mock_put.call_args.args[0] == "https://s3.example.com/presigned"
+        assert mock_put.call_args.kwargs["headers"] == {
+            "Content-Type": "application/octet-stream"
+        }
+        assert "Authorization" not in mock_put.call_args.kwargs["headers"]

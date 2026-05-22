@@ -105,8 +105,13 @@ class PlaudSession:
     def put_raw(self, url: str, *, data: Any = None,
                 headers: dict[str, str] | None = None,
                 timeout: int = 120) -> requests.Response:
-        """PUT without JSON wrapping — used for S3 uploads."""
-        return self._session.put(url, data=data, headers=headers, timeout=timeout)
+        """PUT without Plaud JSON/auth wrapping, used for presigned uploads."""
+        return requests.put(
+            url,
+            data=data,
+            headers=headers or {},
+            timeout=timeout,
+        )
 
     # ------------------------------------------------------------------
     # Response handling
