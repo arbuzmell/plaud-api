@@ -13,6 +13,7 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
+from plaud._endpoints import API_BASE
 from plaud.exceptions import APIError, AuthenticationError, NotFoundError
 
 
@@ -57,7 +58,8 @@ class PlaudSession:
         - Maps HTTP error codes to typed exceptions
     """
 
-    def __init__(self, token: str) -> None:
+    def __init__(self, token: str, *, base_url: str = API_BASE) -> None:
+        self.base_url = self._normalize_base_url(base_url)
         self._session = requests.Session()
         self._session.headers.update(_BROWSER_HEADERS)
         self._session.headers["Authorization"] = f"bearer {token}"
@@ -65,6 +67,15 @@ class PlaudSession:
         adapter = _make_retry_adapter()
         self._session.mount("https://", adapter)
         self._session.mount("http://", adapter)
+
+    @staticmethod
+    def _normalize_base_url(base_url: str) -> str:
+        return base_url.rstrip("/")
+
+    def _url(self, url: str) -> str:
+        if url.startswith(("http://", "https://")):
+            return url
+        return f"{self.base_url}/{url.lstrip('/')}"
 
     # ------------------------------------------------------------------
     # Public helpers
@@ -74,21 +85,21 @@ class PlaudSession:
             timeout: int = 30, **kwargs: Any) -> dict[str, Any]:
         params = dict(params or {})
         params.setdefault("r", random.random())
-        resp = self._session.get(url, params=params, timeout=timeout, **kwargs)
+        resp = self._session.get(self._url(url), params=params, timeout=timeout, **kwargs)
         return self._handle(resp)
 
     def post(self, url: str, *, json: Any = None,
              timeout: int = 30, **kwargs: Any) -> dict[str, Any]:
         if isinstance(json, dict):
             json.setdefault("r", random.random())
-        resp = self._session.post(url, json=json, timeout=timeout, **kwargs)
+        resp = self._session.post(self._url(url), json=json, timeout=timeout, **kwargs)
         return self._handle(resp)
 
     def patch(self, url: str, *, json: dict[str, Any] | None = None,
               timeout: int = 30, **kwargs: Any) -> dict[str, Any]:
         if json is not None:
             json.setdefault("r", random.random())
-        resp = self._session.patch(url, json=json, timeout=timeout, **kwargs)
+        resp = self._session.patch(self._url(url), json=json, timeout=timeout, **kwargs)
         return self._handle(resp)
 
     def put_raw(self, url: str, *, data: Any = None,

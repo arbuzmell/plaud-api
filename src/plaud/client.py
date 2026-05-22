@@ -39,12 +39,11 @@ class PlaudClient:
                 e.g. ``"https://api-apse1.plaud.ai"`` for Southeast Asia.
                 If not provided, defaults to ``https://api.plaud.ai``.
         """
-        if base_url is not None:
-            from plaud._endpoints import set_base_url
-            set_base_url(base_url)
-
         self._token = resolve_token(token)
-        self._session = PlaudSession(self._token)
+        if base_url is None:
+            self._session = PlaudSession(self._token)
+        else:
+            self._session = PlaudSession(self._token, base_url=base_url)
 
         self.recordings = RecordingsAPI(self._session)
         self.transcriptions = TranscriptionsAPI(self._session)

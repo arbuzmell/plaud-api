@@ -33,3 +33,15 @@ class TestPlaudClient:
             os.environ.pop("PLAUD_TOKEN", None)
             with pytest.raises(ValueError, match="Plaud token not found"):
                 PlaudClient()
+
+    def test_base_url_is_passed_to_session(self):
+        client = PlaudClient(token="test-token", base_url="https://api-apse1.plaud.ai/")
+
+        assert client._session.base_url == "https://api-apse1.plaud.ai"
+
+    def test_base_url_is_client_scoped(self):
+        regional = PlaudClient(token="regional-token", base_url="https://api-apse1.plaud.ai")
+        default = PlaudClient(token="default-token")
+
+        assert regional._session.base_url == "https://api-apse1.plaud.ai"
+        assert default._session.base_url == "https://api.plaud.ai"
