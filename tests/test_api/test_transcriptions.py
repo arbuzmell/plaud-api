@@ -11,6 +11,7 @@ from plaud.exceptions import AnalysisTimeoutError
 from tests.conftest import (
     SAMPLE_ANALYSIS_COMPLETE,
     SAMPLE_ANALYSIS_PROCESSING,
+    SAMPLE_ANALYSIS_SUCCESS_STATUS_NEGATIVE,
     SAMPLE_FILE_DETAIL,
 )
 
@@ -30,6 +31,18 @@ class TestGetStatus:
         mock_session.post.return_value = SAMPLE_ANALYSIS_PROCESSING
         status = api.get_status("abc123")
         assert status.complete is False
+
+    def test_complete_live_success_status_negative(
+        self,
+        api: TranscriptionsAPI,
+        mock_session: MagicMock,
+    ):
+        mock_session.post.return_value = SAMPLE_ANALYSIS_SUCCESS_STATUS_NEGATIVE
+
+        status = api.get_status("abc123")
+
+        assert status.complete is True
+        assert status.message == "success"
 
 
 class TestGet:
@@ -54,3 +67,17 @@ class TestWait:
         mock_session.post.return_value = SAMPLE_ANALYSIS_PROCESSING
         with pytest.raises(AnalysisTimeoutError):
             api.wait("abc123", timeout=0, poll_interval=0)
+
+    def test_returns_when_live_success_status_negative(
+        self,
+        api: TranscriptionsAPI,
+        mock_session: MagicMock,
+    ):
+        mock_session.post.side_effect = [
+            SAMPLE_ANALYSIS_PROCESSING,
+            SAMPLE_ANALYSIS_SUCCESS_STATUS_NEGATIVE,
+        ]
+
+        result = api.wait("abc123", timeout=1, poll_interval=0)
+
+        assert result == SAMPLE_ANALYSIS_SUCCESS_STATUS_NEGATIVE

@@ -66,6 +66,17 @@ SAMPLE_ANALYSIS_COMPLETE = {
     "task_id_info": {},
 }
 
+SAMPLE_ANALYSIS_SUCCESS_STATUS_NEGATIVE = {
+    "status": -111,
+    "msg": "success",
+    "data_result": [
+        {"speaker": "Speaker 1", "content": "This is a short Plaud API test."},
+    ],
+    "data_result_summ": "",
+    "outline_result": [],
+    "task_id_info": {},
+}
+
 SAMPLE_ANALYSIS_PROCESSING = {
     "status": 0,
     "msg": "task processing",

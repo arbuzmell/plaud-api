@@ -136,8 +136,11 @@ class AnalysisStatus(BaseModel):
     @classmethod
     def _from_api(cls, data: dict[str, Any]) -> dict[str, Any]:
         if isinstance(data, dict):
+            is_complete = data.get("status") == 1 or (
+                data.get("msg") == "success" and "data_result" in data
+            )
             return {
-                "complete": data.get("status") == 1,
+                "complete": is_complete,
                 "message": data.get("msg", ""),
                 "raw": data,
             }
