@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import time
 import uuid
+from builtins import list as list_type
 from datetime import datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from plaud._endpoints import (
     FILE_CONFIRM,
@@ -40,7 +41,7 @@ class RecordingsAPI:
         skip: int = 0,
         sort_by: str = "start_time",
         descending: bool = True,
-    ) -> list[Recording]:
+    ) -> list_type[Recording]:
         """List recordings (most recent first by default)."""
         data = self._s.get(
             FILE_SIMPLE,
@@ -61,7 +62,7 @@ class RecordingsAPI:
             raise NotFoundError(f"Recording not found: {file_id}")
         return details[0]
 
-    def get_details(self, file_ids: list[str]) -> list[Recording]:
+    def get_details(self, file_ids: list_type[str]) -> list_type[Recording]:
         """Get full details for a batch of recording IDs."""
         if not file_ids:
             return []
@@ -74,7 +75,7 @@ class RecordingsAPI:
         files = data["data_file_list"]
         if not files:
             raise NotFoundError(f"Recording not found: {file_id}")
-        return files[0]
+        return cast(dict[str, Any], files[0])
 
     # ------------------------------------------------------------------
     # Audio URL
@@ -83,7 +84,7 @@ class RecordingsAPI:
     def get_audio_url(self, file_id: str) -> str:
         """Get a temporary presigned S3 URL for downloading the audio file."""
         data = self._s.get(f"{FILE_TEMP_URL}/{file_id}")
-        return data["temp_url"]
+        return str(data["temp_url"])
 
     # ------------------------------------------------------------------
     # Upload

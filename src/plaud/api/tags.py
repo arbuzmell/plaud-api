@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from builtins import list as list_type
 from typing import TYPE_CHECKING
 
 from plaud._endpoints import FILE_SIMPLE, FILETAG
@@ -17,12 +18,12 @@ class TagsAPI:
     def __init__(self, session: PlaudSession) -> None:
         self._s = session
 
-    def list(self) -> list[Tag]:
+    def list(self) -> list_type[Tag]:
         """Get all tags."""
         data = self._s.get(FILETAG)
         return [Tag.model_validate(t) for t in data["data_filetag_list"]]
 
-    def get_recordings(self, tag_id: str) -> list[str]:
+    def get_recordings(self, tag_id: str) -> list_type[str]:
         """Get recording IDs that belong to a tag.
 
         Args:

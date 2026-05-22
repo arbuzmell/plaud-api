@@ -91,12 +91,19 @@ class Summary(BaseModel):
             return raw
         try:
             parsed = json.loads(raw)
-            if "markdown" in parsed:
-                return parsed["markdown"]
-            if "content" in parsed and isinstance(parsed["content"], dict):
-                return parsed["content"].get("markdown", raw)
-            if "summary" in parsed:
-                return parsed["summary"]
+            if not isinstance(parsed, dict):
+                return raw
+            markdown = parsed.get("markdown")
+            if isinstance(markdown, str):
+                return markdown
+            content = parsed.get("content")
+            if isinstance(content, dict):
+                content_markdown = content.get("markdown")
+                if isinstance(content_markdown, str):
+                    return content_markdown
+            summary = parsed.get("summary")
+            if isinstance(summary, str):
+                return summary
             return raw
         except (json.JSONDecodeError, TypeError):
             return raw

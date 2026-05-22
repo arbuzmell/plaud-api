@@ -7,7 +7,7 @@ automatic retry on 5xx, and error mapping to custom exceptions.
 from __future__ import annotations
 
 import random
-from typing import Any
+from typing import Any, cast
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -143,4 +143,4 @@ class PlaudSession:
                     status_code=resp.status_code,
                     response_body=resp.text,
                 )
-        return data
+        return cast(dict[str, Any], data)

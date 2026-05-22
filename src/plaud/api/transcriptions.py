@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import time
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from plaud._endpoints import AI_TRANSSUMM, FILE_DETAIL, FILE_LIST
 from plaud.exceptions import AnalysisTimeoutError, NotFoundError
@@ -49,7 +49,7 @@ class TranscriptionsAPI:
                 }
             },
         )
-        return data.get("data_file", data)
+        return cast(dict[str, Any], data.get("data_file", data))
 
     def get_status(self, file_id: str, *, language: str = "en") -> AnalysisStatus:
         """Check the current analysis status for a recording."""
@@ -141,7 +141,7 @@ class TranscriptionsAPI:
                 },
             },
         )
-        return data.get("data_file", data)
+        return cast(dict[str, Any], data.get("data_file", data))
 
     # ------------------------------------------------------------------
     # High-level getters
@@ -181,7 +181,7 @@ class TranscriptionsAPI:
             f"{FILE_DETAIL}/{file_id}",
             json={"trans_result": segments},
         )
-        return data.get("data_file", data)
+        return cast(dict[str, Any], data.get("data_file", data))
 
     # ------------------------------------------------------------------
     # Internal
@@ -192,4 +192,4 @@ class TranscriptionsAPI:
         files = data["data_file_list"]
         if not files:
             raise NotFoundError(f"Recording not found: {file_id}")
-        return files[0]
+        return cast(dict[str, Any], files[0])
