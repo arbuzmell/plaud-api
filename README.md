@@ -84,6 +84,20 @@ summary = client.transcriptions.get_summary(recordings[0].id)
 print(summary.content)
 ```
 
+### Regional API endpoints
+
+Some Plaud accounts are served from regional API hosts. Pass `base_url` when
+creating the client:
+
+```python
+from plaud import PlaudClient
+
+client = PlaudClient(base_url="https://api-apse1.plaud.ai")
+recordings = client.recordings.list()
+```
+
+The default endpoint remains `https://api.plaud.ai`.
+
 ## API Reference
 
 ### Recordings
