@@ -133,4 +133,14 @@ class PlaudSession:
                 status_code=resp.status_code,
                 response_body=resp.text,
             )
-        return resp.json()
+        data = resp.json()
+        if isinstance(data, dict):
+            msg = data.get("msg") or data.get("message")
+            status = data.get("status")
+            if status == -302 or msg == "user region mismatch":
+                raise APIError(
+                    f"API error {status}: {msg}",
+                    status_code=resp.status_code,
+                    response_body=resp.text,
+                )
+        return data

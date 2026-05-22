@@ -4,6 +4,9 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
+import pytest
+
+from plaud.exceptions import APIError
 from plaud.session import PlaudSession
 
 
@@ -57,3 +60,14 @@ class TestPlaudSessionPutRaw:
             "Content-Type": "application/octet-stream"
         }
         assert "Authorization" not in mock_put.call_args.kwargs["headers"]
+
+
+class TestPlaudSessionHandle:
+    def test_region_mismatch_payload_raises_api_error(self):
+        response = MagicMock()
+        response.status_code = 200
+        response.text = '{"status": -302, "msg": "user region mismatch"}'
+        response.json.return_value = {"status": -302, "msg": "user region mismatch"}
+
+        with pytest.raises(APIError, match="user region mismatch"):
+            PlaudSession._handle(response)
