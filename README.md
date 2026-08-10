@@ -1,3 +1,5 @@
+
+
 # plaud-api
 
 [![PyPI](https://img.shields.io/pypi/v/plaud-api)](https://pypi.org/project/plaud-api/)
@@ -173,6 +175,7 @@ plaud recordings list -n 50                        # list more
 plaud recordings get <file_id>                     # show recording details
 plaud recordings upload meeting.mp3 --name "Standup" --analyze
 plaud recordings download <file_id>                # download audio file
+plaud recordings download <file_id> -o out.mp3     # save to custom path
 plaud recordings download <file_id> --url-only     # just print the URL
 
 # Transcription
