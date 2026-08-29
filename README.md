@@ -1,5 +1,3 @@
-
-
 # plaud-api
 
 [![PyPI](https://img.shields.io/pypi/v/plaud-api)](https://pypi.org/project/plaud-api/)
