@@ -107,7 +107,7 @@ The default endpoint remains `https://api.plaud.ai`.
 | `client.recordings.list(limit=50)` | `list[Recording]` | List recent recordings, most recent first |
 | `client.recordings.get(file_id)` | `Recording` | Get a single recording by ID |
 | `client.recordings.get_audio_url(file_id)` | `str` | Get a temporary S3 presigned URL to download the audio |
-| `client.recordings.upload(path, name=...)` | `Recording` | Upload an MP3/OPUS file to Plaud |
+| `client.recordings.upload(path, name=..., start_time=...)` | `Recording` | Upload an MP3/OPUS file to Plaud (multipart for files over 5 MiB); `start_time` sets the recording date |
 | `client.recordings.get_raw(file_id)` | `dict` | Raw API response (includes `trans_result`, `ai_content`, etc.) |
 
 `Recording` fields: `id`, `filename`, `duration_ms`, `filesize`, `created_at`, `has_transcription`, `has_summary`, `tag_ids`, `duration_display`, `duration_seconds`.
@@ -172,6 +172,7 @@ plaud recordings list                              # list recent recordings
 plaud recordings list -n 50                        # list more
 plaud recordings get <file_id>                     # show recording details
 plaud recordings upload meeting.mp3 --name "Standup" --analyze
+plaud recordings upload meeting.mp3 --start-time 2026-10-20T09:58:00-07:00  # date it at the meeting
 plaud recordings download <file_id>                # download audio file
 plaud recordings download <file_id> -o out.mp3     # save to custom path
 plaud recordings download <file_id> --url-only     # just print the URL

@@ -24,6 +24,10 @@ if TYPE_CHECKING:
     from plaud.session import PlaudSession
 
 
+# S3 multipart part size; the presign endpoint returns one URL per chunk of this size.
+UPLOAD_PART_SIZE = 5 * 1024 * 1024
+
+
 class RecordingsAPI:
     """Operations on Plaud recordings (files)."""
 
@@ -95,12 +99,19 @@ class RecordingsAPI:
         file_path: str | Path,
         *,
         name: str | None = None,
+        start_time: datetime | None = None,
     ) -> Recording:
         """Upload an audio file to Plaud.
+
+        Files larger than one part (5 MiB) are sent as a multipart upload, one
+        part per presigned URL the API returns.
 
         Args:
             file_path: Path to an MP3 or OPUS file.
             name: Display name for the recording. Defaults to a date-based name.
+            start_time: When the recording started. Plaud sorts and dates the
+                recording by this. Defaults to now. Naive datetimes are treated
+                as local time.
 
         Returns:
             The newly created Recording.
@@ -113,25 +124,38 @@ class RecordingsAPI:
         file_type = "OPUS" if ext in {".asr", ".opus"} else "MP3"
         file_size = file_path.stat().st_size
 
-        # Step 1: Get presigned URL
+        # Step 1: Get presigned URLs, one per UPLOAD_PART_SIZE chunk
         upload_data = self._s.post(
             FILE_UPLOAD_URL,
             json={"filesize": file_size, "file_type": file_type},
         )["data"]
-        upload_url = upload_data["part_urls"][0]
+        part_urls = upload_data["part_urls"]
         upload_id = upload_data["upload_id"]
         object_name = upload_data["object_name"]
 
-        # Step 2: Upload to S3
-        with open(file_path, "rb") as f:
-            resp = self._s.put_raw(
-                upload_url,
-                data=f,
-                headers={"Content-Type": "application/octet-stream"},
+        expected_parts = max(1, -(-file_size // UPLOAD_PART_SIZE))
+        if len(part_urls) != expected_parts:
+            raise UploadError(
+                f"Expected {expected_parts} upload part URLs for {file_size} bytes, "
+                f"got {len(part_urls)}"
             )
-        if resp.status_code != 200:
-            raise UploadError(f"S3 upload failed: {resp.status_code} {resp.text[:200]}")
-        etag = resp.headers.get("ETag", "").strip('"')
+
+        # Step 2: Upload each part to S3
+        parts = []
+        with open(file_path, "rb") as f:
+            for number, url in enumerate(part_urls, start=1):
+                resp = self._s.put_raw(
+                    url,
+                    data=f.read(UPLOAD_PART_SIZE),
+                    headers={"Content-Type": "application/octet-stream"},
+                )
+                if resp.status_code != 200:
+                    raise UploadError(
+                        f"S3 upload of part {number}/{len(part_urls)} failed: "
+                        f"{resp.status_code} {resp.text[:200]}"
+                    )
+                etag = resp.headers.get("ETag", "").strip('"')
+                parts.append({"Etag": etag, "PartNumber": number})
 
         # Step 3: Merge multipart
         self._s.post(
@@ -139,7 +163,7 @@ class RecordingsAPI:
             json={
                 "upload_id": upload_id,
                 "object_name": object_name,
-                "parts": [{"Etag": etag, "PartNumber": 1}],
+                "parts": parts,
             },
         )
 
@@ -147,7 +171,9 @@ class RecordingsAPI:
         if name is None:
             name = f"Meeting {datetime.now().strftime('%d.%m.%Y')}"
 
-        timestamp_ms = int(time.time() * 1000)
+        timestamp_ms = (
+            int(start_time.timestamp() * 1000) if start_time else int(time.time() * 1000)
+        )
         result = self._s.post(
             FILE_CONFIRM,
             json={

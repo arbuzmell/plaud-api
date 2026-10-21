@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from datetime import datetime
 from pathlib import Path
 
 from plaud import PlaudClient, __version__
@@ -49,8 +50,10 @@ def cmd_recordings_upload(args: argparse.Namespace) -> None:
         print(f"Error: File not found: {file_path}", file=sys.stderr)
         sys.exit(1)
 
+    start_time = datetime.fromisoformat(args.start_time) if args.start_time else None
+
     print(f"Uploading {file_path.name}...")
-    recording = client.recordings.upload(file_path, name=args.name)
+    recording = client.recordings.upload(file_path, name=args.name, start_time=start_time)
     print("Upload complete!")
     print(f"  ID:       {recording.id}")
     print(f"  Filename: {recording.filename}")
@@ -262,6 +265,9 @@ def build_parser() -> argparse.ArgumentParser:
     rec_upload = rec_sub.add_parser("upload", help="Upload audio file")
     rec_upload.add_argument("file", help="Path to audio file")
     rec_upload.add_argument("--name", "-N", help="Recording name")
+    rec_upload.add_argument("--start-time", "-t",
+                            help="When the recording started, ISO 8601 "
+                                 "(e.g. 2026-10-20T09:58:00-07:00); default now")
     rec_upload.add_argument("--analyze", "-a", action="store_true", default=False,
                             help="Run analysis after upload")
     rec_upload.add_argument("--language", "-l", default="en")
